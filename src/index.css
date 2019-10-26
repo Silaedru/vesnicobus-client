@@ -1,0 +1,48 @@
+body {
+    background: #fafafa;
+    padding: 20px;
+}
+
+.content {
+    max-width: 640px;
+    margin: auto;
+}
+
+.title {
+    text-align: center;
+    margin-top: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.bus-list-item {
+    margin-bottom: 0.5rem;
+}
+
+.bus-list-item h4 {
+    margin-bottom: 0;
+    margin-top: 3px;
+}
+
+.bus-header {
+    position: relative;
+    cursor: pointer;
+}
+
+.bus-header .delay {
+    position: absolute;
+    text-align: center;
+    width: 100%;
+    margin-top: 5px;
+}
+
+.no-select {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.passed-stop {
+    color: red;
+}
