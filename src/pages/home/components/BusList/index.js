@@ -24,8 +24,12 @@ export default class BusList extends React.Component {
 	render() {
 		const buses = this.props.buses
 			.filter(bus => this.busToText(bus).indexOf(this.props.filter) !== -1)
-			.sort((a, b) => parseInt(b.line) < parseInt(a.line));
+			.sort((a, b) => parseInt(a.line) - parseInt(b.line));
 
-		return buses.map(bus => <BusListItem key={bus.id} bus={bus} client={this.props.client} />);
+		return buses.map(bus => <BusListItem key={bus.id}
+		                                     bus={bus}
+		                                     estimates={this.props.estimates[bus.id]}
+		                                     client={this.props.client}
+		                                     estimateFun={this.props.estimateFun} />);
 	}
 }

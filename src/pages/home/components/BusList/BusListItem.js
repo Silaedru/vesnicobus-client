@@ -7,38 +7,13 @@ import Button from "react-bootstrap/Button";
 import {faChevronDown} from "@fortawesome/free-solid-svg-icons/faChevronDown";
 import {faChevronRight} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {formatDelayTime} from "../../../../util";
 
 export default class BusListItem extends React.Component {
 	constructor(props) {
 		super(props);
 
-		this.state = {visible: false, estimates:{}};
-	}
-
-	formatTime(delay, zeroTimeString) {
-		let d = Math.max(parseInt(delay), 0);
-
-		switch (d) {
-			case 0:
-				return zeroTimeString;
-			case 1:
-				return "1 minuta";
-			case 2:
-			case 3:
-			case 4:
-				return `${d} minuty`;
-			default:
-		}
-
-		return `${d} minut`;
-	}
-
-	estimateArrival(stopId) {
-		this.props.client.estimateArrival(this.props.bus.id, stopId).then(estimate => {
-			const estimates = this.state.estimates;
-			estimates[stopId] = this.formatTime(estimate.estimate, "okamžik");
-			this.setState({estimates: estimates});
-		});
+		this.state = { visible: false };
 	}
 
 	renderTrip(stops, nextStop) {
@@ -54,14 +29,18 @@ export default class BusListItem extends React.Component {
 
 			let estimate;
 
-			if (!passed) {
-				estimate = this.state.estimates[stop.stop_id];
+			if (!passed && this.props.estimates) {
+				estimate = this.props.estimates[stop.stop_id];
 			}
 
 			rtn.push(
 				<li key={stop.stop_id} className={passed ? "passed-stop" : ""}>
-					{stop.stop_name} {!passed && !estimate ? <span onClick={() => this.estimateArrival(stop.stop_id)}>(Odhadnout dojezd)</span> : ""}
-					{estimate ? `Příjezd za ${estimate}` : ""}
+					{
+						stop.stop_name} {!passed && !estimate ?
+						<span className="btn-link estimate-button" onClick={() => this.props.estimateFun(this.props.bus.id, stop.stop_id)}>[Odhadnout příjezd]</span> :
+						null
+					}
+					{estimate ? <span className="text-info">(Příjezd za <strong>{estimate}</strong>)</span> : null}
 				</li>
 			);
 		}
@@ -71,6 +50,18 @@ export default class BusListItem extends React.Component {
 
 	toggleVisibility() {
 		this.setState({visible: !this.state.visible});
+	}
+
+	delayClassName(delay) {
+		if (delay < -2) {
+			return "text-primary";
+		} else if (delay < 3) {
+			return "text-success";
+		} else if (delay < 11) {
+			return "text-warning";
+		} else {
+			return "text-danger";
+		}
 	}
 
 	render() {
@@ -85,8 +76,11 @@ export default class BusListItem extends React.Component {
 								<Badge variant="dark"><strong>{bus.line}</strong></Badge>
 							</h4>
 
-							<div className="delay">
-								Zpoždění: <strong>{this.formatTime(bus.delay, "žádné")}</strong>
+							<div className="delay ">
+								{
+									bus.delay < -2 ? "Předjetí: " : "Zpoždění: "
+								}
+								<strong className={this.delayClassName(bus.delay)}>{formatDelayTime(bus.delay)}</strong>
 							</div>
 
 							<div className="float-right">
@@ -100,13 +94,17 @@ export default class BusListItem extends React.Component {
 							</div>
 						</Card.Header>
 
-						<Card.Body className={this.state.visible ? "" : "d-none"}>
-							<div>Cíl: <strong>{bus.last_stop_name}</strong></div>
-							<div>Příští zastávka: <strong>{bus.next_stop_name}</strong></div>
-							<div>
-								Trasa: {this.renderTrip(bus.stops, bus.next_stop_id)}
-							</div>
-						</Card.Body>
+						{
+							this.state.visible ?
+								<Card.Body>
+									<div>Příští zastávka: <strong>{bus.next_stop_name}</strong></div>
+									<div>Cíl: <strong>{bus.last_stop_name}</strong></div>
+									<div>
+										Trasa: {this.renderTrip(bus.stops, bus.next_stop_id)}
+									</div>
+								</Card.Body> :
+								null
+						}
 					</Card>
 				</Col>
 			</Row>

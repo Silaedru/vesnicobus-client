@@ -12,7 +12,7 @@ export default class VesnicobusClient {
 
 			request.addEventListener("load", response => {
 				if (request.status >= 400)
-					reject(response.target.responseText);
+					resolve("false");
 
 				resolve(response.target.responseText);
 			});
@@ -37,8 +37,8 @@ export default class VesnicobusClient {
 		return JSON.parse(response);
 	}
 
-	async estimateArrival(busId, stopId) {
-		const response = await VesnicobusClient.ajaxRequest("GET", `${this.serverBase}/buses/${busId}/estimate/${stopId}`);
+	async estimateArrival(busID, stopID) {
+		const response = await VesnicobusClient.ajaxRequest("GET", `${this.serverBase}/buses/${busID}/estimate/${stopID}`);
 		return JSON.parse(response);
 	}
 }
