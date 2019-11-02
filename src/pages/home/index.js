@@ -4,7 +4,7 @@ import BusList from "./components/BusList";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
-import {formatArrivalTime, formatTime} from "../../util";
+import {formatArrivalTime, formatTime, queueData, queueIndex} from "../../util";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faBus} from "@fortawesome/free-solid-svg-icons/faBus";
 
@@ -14,13 +14,18 @@ export default class HomePage extends React.Component {
 	 * @type {VesnicobusClient}
 	 */
 	client = null;
-	queuedEstimates = [];
 	filterTimeout = null;
 
 	constructor(props) {
 		super(props);
 
-		this.state = { buses: [], refreshTime: "Probíhá synchronizace ...", filter: "", estimates: {} };
+		this.state = {
+			buses: [],
+			refreshTime: "Probíhá synchronizace ...",
+			filter: "",
+			estimates: {},
+			queuedEstimates: []
+		};
 	}
 
 	refreshBuses() {
@@ -42,13 +47,16 @@ export default class HomePage extends React.Component {
 	}
 
 	refreshEstimatedArrivals() {
-		let estimates = this.state.estimates;
+		const originalEstimates = this.state.estimates;
+		const originalQueue = this.state.queue;
 		const promises = [];
 
-		if (estimates) {
-			Object.keys(estimates).forEach(busID => {
-				Object.keys(estimates[busID]).forEach(stopID => {
-					promises.push(this.client.estimateArrival(busID, stopID));
+		if (originalEstimates) {
+			Object.keys(originalEstimates).forEach(busID => {
+				Object.keys(originalEstimates[busID]).forEach(stopID => {
+					if (originalEstimates[busID][stopID]) {
+						promises.push(this.client.estimateArrival(busID, stopID));
+					}
 				});
 			});
 		}
@@ -69,6 +77,7 @@ export default class HomePage extends React.Component {
 			estimates = this.state.estimates;
 			const newEstimates = {};
 			const updatedQueuedEstimates = [];
+			const currentQueue = this.state.queuedEstimates;
 
 			Object.keys(updatedEstimates).forEach(busID => {
 				if (estimates[busID]) {
@@ -78,7 +87,7 @@ export default class HomePage extends React.Component {
 					Object.keys(updatedEstimates[busID]).forEach(stopID => {
 						if (estimates[busID][stopID]) {
 							newEstimates[busID][stopID] = updatedEstimates[busID][stopID];
-							updatedQueuedEstimates.push(`${busID}-${stopID}`);
+							updatedQueuedEstimates.push(queueIndex(busID, stopID));
 						}
 					});
 				}
@@ -86,31 +95,38 @@ export default class HomePage extends React.Component {
 
 			const newQueuedEstimates = [];
 
-			for (let i=0; i<this.queuedEstimates.length; i++) {
-				const item = this.queuedEstimates[i];
+			for (let i=0; i<currentQueue.length; i++) {
+				const item = currentQueue[i];
 				if (updatedQueuedEstimates.indexOf(item) !== -1) {
 					newQueuedEstimates.push(item);
 				}
 			}
 
-			this.queuedEstimates = newQueuedEstimates;
-			this.setState({estimates: newEstimates});
+			this.setState({estimates: newEstimates, queuedEstimates: newQueuedEstimates});
 		}).catch(() => {
 		});
 	}
 
 	estimateArrival(busID, stopID) {
-		if (this.queuedEstimates.indexOf(`${busID}-${stopID}`) === -1) {
-			const estimates = this.state.estimates;
+		let queuedEstimates = this.state.queuedEstimates;
+		if (queuedEstimates.indexOf(queueIndex(busID, stopID)) === -1) {
+			let estimates = this.state.estimates;
 
-			if (this.queuedEstimates.length >= this.props.maxEstimates) {
-				const rm = this.queuedEstimates.shift().split("-");
+			if (queuedEstimates.length >= this.props.maxEstimates) {
+				const rm = queueData(queuedEstimates.shift());
 				estimates[rm[0]][rm[1]] = undefined;
 			}
 
-			this.queuedEstimates.push(`${busID}-${stopID}`);
+			queuedEstimates.push(queueIndex(busID, stopID));
+			this.setState({estimates: estimates, queuedEstimates: queuedEstimates});
 
 			this.client.estimateArrival(busID, stopID).then(estimate => {
+				estimates = this.state.estimates;
+				queuedEstimates = this.state.queuedEstimates;
+
+				if (queuedEstimates.indexOf(queueIndex(busID, stopID)) === -1)
+					return;
+
 				if (!estimates[busID]) {
 					estimates[busID] = {};
 				}

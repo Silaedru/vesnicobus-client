@@ -7,7 +7,7 @@ export default class App extends React.Component {
 		return (
 			<div className="content">
 				<HomePage server="http://dixneuf.nevesnican.cz:10501"
-				          refreshInterval={40}
+				          refreshInterval={30}
 				          maxEstimates={10} />
 			</div>
 		);

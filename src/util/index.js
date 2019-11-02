@@ -60,3 +60,11 @@ export function formatTime(time) {
 
 	return `${h}:${m}:${s}`;
 }
+
+export function queueIndex(busID, stopID) {
+	return `${busID}-${stopID}`;
+}
+
+export function queueData(index) {
+	return index.split("-");
+}
