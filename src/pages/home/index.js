@@ -5,8 +5,6 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
 import {formatArrivalTime, formatTime, queueData, queueIndex} from "../../util";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faBus} from "@fortawesome/free-solid-svg-icons/faBus";
 
 export default class HomePage extends React.Component {
 	/**
@@ -48,7 +46,6 @@ export default class HomePage extends React.Component {
 
 	refreshEstimatedArrivals() {
 		const originalEstimates = this.state.estimates;
-		const originalQueue = this.state.queue;
 		const promises = [];
 
 		if (originalEstimates) {
@@ -151,11 +148,7 @@ export default class HomePage extends React.Component {
 
 	render() {
 		return (
-			<div>
-				<h1 className="title">
-					Vesnico <FontAwesomeIcon icon={faBus} size={"lg"} /> Bus
-				</h1>
-
+			<>
 				<Form.Group as={Row} controlId="search">
 					<Col sm="2" />
 					<Form.Label column={true} sm="1">Hledat:</Form.Label>
@@ -175,7 +168,7 @@ export default class HomePage extends React.Component {
 				         filter={this.state.filter}
 				         estimates={this.state.estimates}
 				         estimateFun={(busID, stopID) => this.estimateArrival(busID, stopID)} />
-			</div>
+			</>
 		);
 	}
 }
