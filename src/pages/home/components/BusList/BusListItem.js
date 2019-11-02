@@ -37,15 +37,15 @@ export default class BusListItem extends React.Component {
 				<li key={stop.stop_id} className={passed ? "passed-stop" : ""}>
 					{
 						stop.stop_name} {!passed && !estimate ?
-						<span className="btn-link estimate-button" onClick={() => this.props.estimateFun(this.props.bus.id, stop.stop_id)}>[Odhadnout příjezd]</span> :
+						<span className="btn-link estimate-button no-select" onClick={() => this.props.estimateFun(this.props.bus.id, stop.stop_id)}>[Odhadnout příjezd]</span> :
 						null
 					}
-					{estimate ? <span className="text-info">(Příjezd za <strong>{estimate}</strong>)</span> : null}
+					{estimate ? <span className="arrival-estimate">[Příjezd za <strong>{estimate}</strong>]</span> : null}
 				</li>
 			);
 		}
 
-		return <ul>{rtn}</ul>;
+		return <ul className="stops">{rtn}</ul>;
 	}
 
 	toggleVisibility() {

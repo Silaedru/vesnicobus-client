@@ -15,6 +15,7 @@ export default class HomePage extends React.Component {
 	 */
 	client = null;
 	queuedEstimates = [];
+	filterTimeout = null;
 
 	constructor(props) {
 		super(props);
@@ -121,6 +122,17 @@ export default class HomePage extends React.Component {
 		}
 	}
 
+	updateFilter(filter) {
+		if (this.filterTimeout != null) {
+			clearTimeout(this.filterTimeout);
+		}
+
+		this.filterTimeout = setTimeout(() => {
+			this.filterTimeout = null;
+			this.setState({filter: filter});
+		}, 300);
+	}
+
 	render() {
 		return (
 			<div>
@@ -132,7 +144,7 @@ export default class HomePage extends React.Component {
 					<Col sm="2" />
 					<Form.Label column={true} sm="1">Hledat:</Form.Label>
 					<Col sm="7">
-						<Form.Control type="text" onChange={e => this.setState({filter: e.target.value.trim().toLowerCase()})} />
+						<Form.Control type="text" onChange={e => this.updateFilter(e.target.value.trim().toLowerCase())} />
 					</Col>
 					<Col sm="2" />
 				</Form.Group>

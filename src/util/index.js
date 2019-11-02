@@ -1,5 +1,5 @@
 export function formatDelayTime(delay) {
-	let d = parseInt(delay);
+	let d = Math.round(delay);
 
 	switch (d) {
 		case -1:
@@ -21,7 +21,7 @@ export function formatDelayTime(delay) {
 }
 
 export function formatArrivalTime(time) {
-	let d = Math.max(parseInt(time), 0);
+	let d = Math.max(Math.round(time), 0);
 
 	if (isNaN(d)) {
 		return "okamžik";

@@ -49,12 +49,36 @@ body {
 
 .passed-stop {
     text-decoration: line-through;
+    font-size: 75%;
+    color: #6c757d;
+}
+
+.arrival-estimate {
+    color: #272727aa;
+}
+
+.arrival-estimate strong {
+    color: #272727cc;
+}
+
+ul.stops {
+  list-style: none;
 }
 
 .estimate-button {
     cursor: pointer;
 }
 
+.estimate-button:hover {
+    text-decoration: none;
+}
+
 .delay .text-warning {
     color: orange !important;
+}
+
+.btn-light:hover {
+    color: inherit;
+    background-color: inherit;
+    border-color: transparent;
 }

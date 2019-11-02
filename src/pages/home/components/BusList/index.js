@@ -3,27 +3,25 @@ import BusListItem from "./BusListItem";
 
 export default class BusList extends React.Component {
 	busToText(bus) {
-		const forbiddenKeys = ["id", "latitude", "longitude", "delay"];
+		let rtn = `${bus.line} ${bus.next_stop_name} ${bus.last_stop_name} `;
 
-		let rtn = "";
-
-		Object.keys(bus).forEach(key => {
-
-			for (let i=0; i<forbiddenKeys.length; i++) {
-				if (key.indexOf(forbiddenKeys[i]) !== -1) {
-					return;
-				}
-			}
-
-			rtn = `${rtn} ${(""+bus[key]).toLowerCase()}`
+		bus.stops.forEach(stop => {
+			rtn += `${stop.stop_name} `;
 		});
 
-		return rtn;
+		rtn = rtn.split(",").join(" ");
+
+		return rtn.toLowerCase();
 	}
 
 	render() {
 		const buses = this.props.buses
-			.filter(bus => this.busToText(bus).indexOf(this.props.filter) !== -1)
+			.filter(bus => {
+				return (
+					this.props.filter.length < 1 ||
+					this.busToText(bus).indexOf(this.props.filter) !== -1
+				);
+			})
 			.sort((a, b) => parseInt(a.line) - parseInt(b.line));
 
 		return buses.map(bus => <BusListItem key={bus.id}
