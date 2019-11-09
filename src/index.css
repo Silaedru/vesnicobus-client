@@ -14,8 +14,17 @@ body {
     margin-bottom: 1rem;
 }
 
-.sync-time {
+.refresh-time {
     margin-bottom: 1rem;
+}
+
+.sync-time {
+    display: none;
+    color: #6c757d;
+}
+
+.response-time:hover + .sync-time, .sync-time:hover {
+    display: unset;
 }
 
 .bus-list-item {

@@ -19,7 +19,8 @@ export default class HomePage extends React.Component {
 
 		this.state = {
 			buses: [],
-			refreshTime: "Probíhá synchronizace ...",
+			responseTime: "Probíhá synchronizace ...",
+			syncTime: null,
 			filter: "",
 			estimates: {},
 			queuedEstimates: []
@@ -28,9 +29,14 @@ export default class HomePage extends React.Component {
 
 	refreshBuses() {
 		this.client.fetchCurrentStatus().then(result => {
+			const responseTime = new Date(result.response_timestamp*1000);
 			const syncTime = new Date(result.sync_timestamp*1000);
-			this.setState({ buses: result["bus_info"],
-				refreshTime: `Čas synchronizace: ${formatTime(syncTime)}` });
+
+			this.setState({
+				buses: result["bus_info"],
+				responseTime: `Čas synchronizace: ${formatTime(responseTime)}`,
+				syncTime: ` (Poslední aktualizace dat: ${formatTime(syncTime)})`
+			});
 		});
 	}
 
@@ -158,9 +164,10 @@ export default class HomePage extends React.Component {
 					<Col sm="2" />
 				</Form.Group>
 
-				<Row className="text-center sync-time">
+				<Row className="text-center refresh-time">
 					<Col>
-						<small>{this.state.refreshTime}</small>
+						<small className="response-time">{this.state.responseTime}</small>
+						<small className="sync-time">{this.state.syncTime}</small>
 					</Col>
 				</Row>
 
