@@ -28,7 +28,7 @@ export default class HomePage extends React.Component {
 
 	refreshBuses() {
 		this.client.fetchCurrentStatus().then(result => {
-			const syncTime = new Date(result.timestamp*1000);
+			const syncTime = new Date(result.sync_timestamp*1000);
 			this.setState({ buses: result["bus_info"],
 				refreshTime: `Čas synchronizace: ${formatTime(syncTime)}` });
 		});
