@@ -1,7 +1,5 @@
 # Vesnicobus Client
 
---- currently in development ---
-
 Simple web client for [Vesnicobus](https://github.com/Silaedru/vesnicobus-service). 
 
 ## Setup
